@@ -1,0 +1,304 @@
+"""
+View Programs page for the Nutrition Planner application.
+
+This page allows users to view existing meal programs and their scheduled meals.
+"""
+import streamlit as st
+import pandas as pd
+from datetime import datetime, timedelta
+from utils.db_manager import NutritionDB
+from utils.constants import MealTime, DAYS_PER_PAGE
+from utils.nutrition import calculate_meal_macros_from_record
+from utils.ui import (
+    display_success_error, 
+    set_success_message, 
+    create_pagination_controls
+)
+
+# Initialize database
+db = NutritionDB()
+
+# Initialize session state variables
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = 0
+
+def on_previous_page():
+    """Handler for previous page button"""
+    if st.session_state.current_page > 0:
+        st.session_state.current_page -= 1
+        st.rerun()
+
+def on_next_page(total_pages):
+    """Handler for next page button"""
+    if st.session_state.current_page < total_pages - 1:
+        st.session_state.current_page += 1
+        st.rerun()
+
+def display_dates(program_data):
+    """Display program dates in metrics format"""
+    # Convert string dates to datetime
+    start_date = pd.to_datetime(program_data['start_date'])
+    end_date = pd.to_datetime(program_data['end_date'])
+    
+    # Program duration display
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Start Date", start_date.strftime("%d-%m-%Y"))
+    with col2:
+        st.metric("End Date", end_date.strftime("%d-%m-%Y"))
+    with col3:
+        duration = (end_date - start_date).days + 1
+        st.metric("Duration", f"{duration} days")
+
+@st.dialog("Nutrition Information", width="large")
+def show_nutrition_info(meal_data):
+    """Display nutrition information in a dialog"""
+    # Get macros from the meal data
+    macros = calculate_meal_macros_from_record(meal_data)
+    
+    # Meal Title and Category
+    st.markdown(f"""
+        <h2 style='margin-bottom: 0;'>{meal_data['meal_name']}</h2>
+        <p style='color: #666; margin-bottom: 20px;'>{meal_data['category']}</p>
+        """, unsafe_allow_html=True)
+    
+    # Macros display in columns with full number display
+    col1, col2, col3, col4 = st.columns([1,1,1,1])
+    
+    with col1:
+        st.metric(
+            "Calories",
+            f"{macros['calories']:.0f} kcal",
+            delta=None,
+            help="Total calories per serving"
+        )
+    
+    with col2:
+        st.metric(
+            "Protein",
+            f"{macros['proteins']:.2f}g",
+            delta=None,
+            help="Total protein content"
+        )
+    
+    with col3:
+        st.metric(
+            "Carbs",
+            f"{macros['carbs']:.2f}g",
+            delta=None,
+            help="Total carbohydrate content"
+        )
+    
+    with col4:
+        st.metric(
+            "Fat",
+            f"{macros['fats']:.2f}g",
+            delta=None,
+            help="Total fat content"
+        )
+    
+    # Calculate macro percentages
+    total_cals = (macros['proteins'] * 4 + macros['carbs'] * 4 + macros['fats'] * 9)
+    
+    if total_cals > 0:
+        st.divider()
+        st.markdown("### Macro Distribution")
+        
+        # Display macro distribution as progress bars
+        protein_pct = (macros['proteins'] * 4 / total_cals) * 100
+        carbs_pct = (macros['carbs'] * 4 / total_cals) * 100
+        fats_pct = (macros['fats'] * 9 / total_cals) * 100
+        
+        st.progress(protein_pct/100, text=f"Protein: {protein_pct:.1f}%")
+        st.progress(carbs_pct/100, text=f"Carbs: {carbs_pct:.1f}%")
+        st.progress(fats_pct/100, text=f"Fat: {fats_pct:.1f}%")
+    
+    # Ingredients Section for regular meals
+    if meal_data['type'] == 'regular':
+        st.divider()
+        st.markdown("### 📝 Ingredients")
+        
+        # Get the food sources for the meal if not already in the data
+        if 'foods' not in meal_data:
+            meal_details = db.get_meal_with_foods(int(meal_data['meal_id']))
+            food_sources = meal_details.get('foods', []) if meal_details else []
+        else:
+            food_sources = meal_data['foods']
+        
+        if food_sources:
+            # Create a clean table for ingredients with full width
+            ingredients_df = pd.DataFrame([
+                {
+                    "Ingredient": food['name'],
+                    "Amount": f"{food['quantity']} {food['base_unit']}"
+                }
+                for food in food_sources
+            ])
+            
+            # Display table with full width and no index
+            st.dataframe(
+                ingredients_df,
+                hide_index=True,
+                use_container_width=True,
+                column_config={
+                    "Ingredient": st.column_config.TextColumn(
+                        "Ingredient",
+                        width="auto"
+                    ),
+                    "Amount": st.column_config.TextColumn(
+                        "Amount",
+                        width="auto"
+                    )
+                }
+            )
+        else:
+            st.info("This meal has no registered ingredients.", icon="🥺")
+
+def delete_program_meal(program_id, date_str, meal_time):
+    """Delete a meal from the program"""
+    if db.delete_program_meal(program_id, date_str, meal_time):
+        set_success_message("Meal removed!")
+        st.rerun()
+
+def display_meal_day(date, day_meals, program_id):
+    """Display meals for a specific day"""
+    date_str = date.strftime('%Y-%m-%d')
+    st.write(f"### {date.strftime('%A, %B %d')}")
+    
+    # Create columns for each meal time
+    cols = st.columns(len(MealTime.as_list()))
+    
+    for col_idx, (col, meal_time) in enumerate(zip(cols, MealTime.as_list())):
+        with col:
+            st.write(f"**{meal_time}**")
+            meal = day_meals[day_meals['meal_time'] == meal_time]
+            
+            if not meal.empty:
+                meal_data = meal.iloc[0]
+                
+                # Generate a unique ID for this meal
+                meal_unique_id = f"{date_str}_{meal_time}_{col_idx}"
+                
+                # Display meal in a container
+                with st.container(border=True):
+                    st.write(f"**{meal_data['meal_name']}**")
+                    
+                    # Display meal actions with unique keys
+                    btn_col1, btn_col2 = st.columns(2)
+                    with btn_col1:
+                        if st.button("🔍", key=f"view_{meal_unique_id}_{date_str}", help="View nutrition info"):
+                            show_nutrition_info(meal_data)
+                    
+                    with btn_col2:
+                        if st.button("🗑️", key=f"delete_{meal_unique_id}_{date_str}", help="Remove meal"):
+                            delete_program_meal(program_id, date_str, meal_time)
+            else:
+                st.caption("No meal assigned")
+
+def main():
+    """Main function for the View Programs page"""
+    st.title("📅 View Meal Programs")
+    
+    # Display any success/error messages
+    display_success_error()
+    
+    # Get all programs
+    programs = db.get_all_programs()
+    if programs.empty:
+        st.info("No meal programs created yet. Create a program in the 'Create Program' page.")
+        return
+    
+    # Program selection
+    st.subheader("Select Program")
+    col1, col2 = st.columns([3, 1], vertical_alignment="bottom")
+    
+    with col1:
+        selected_program = st.selectbox(
+            "Choose a program to view",
+            programs['name'].tolist(),
+            index=0,
+            format_func=lambda x: f"{x}"
+        )
+    
+    # Get program data
+    program_data = programs[programs['name'] == selected_program].iloc[0]
+    
+    # Display delete button
+    with col2:
+        if st.button("🗑️ Delete Program", key="delete_program", use_container_width=True):
+            if db.delete_program(int(program_data['id'])):
+                set_success_message(f"Program '{selected_program}' deleted!")
+                st.rerun()
+    
+    # Display program details
+    st.divider()
+    st.subheader("📆 Program Details")
+    display_dates(program_data)
+    
+    # Get program meals
+    program_id = int(program_data['id'])
+    program_meals = db.get_program_meals(program_id)
+    
+    if program_meals.empty:
+        st.info("This program has no meals assigned yet. Edit the program to add meals.")
+        return
+    
+    # Prepare for paging through dates
+    start_date = pd.to_datetime(program_data['start_date'])
+    end_date = pd.to_datetime(program_data['end_date'])
+    dates = pd.date_range(start_date, end_date)
+    total_pages = len(dates) // DAYS_PER_PAGE + (1 if len(dates) % DAYS_PER_PAGE > 0 else 0)
+    
+    # Display pagination controls
+    st.divider()
+    create_pagination_controls(
+        st.session_state.current_page,
+        total_pages,
+        on_previous_page,
+        lambda: on_next_page(total_pages),
+        suffix="top"
+    )
+    
+    # Display daily meals for current page
+    start_idx = st.session_state.current_page * DAYS_PER_PAGE
+    end_idx = min(start_idx + DAYS_PER_PAGE, len(dates))
+    current_dates = dates[start_idx:end_idx]
+    
+    for date in current_dates:
+        date_str = date.strftime('%Y-%m-%d')
+        day_meals = program_meals[program_meals['date'] == date_str]
+        
+        display_meal_day(date, day_meals, program_id)
+        st.divider()
+    
+    # Bottom pagination controls for convenience
+    create_pagination_controls(
+        st.session_state.current_page,
+        total_pages,
+        on_previous_page,
+        lambda: on_next_page(total_pages),
+        suffix="bottom"
+    )
+    
+    # Display some helpful tips
+    with st.expander("💡 Program Viewing Tips"):
+        st.markdown("""
+        ### Understanding the Program View
+        
+        - Each row represents a day in your meal program
+        - Each column represents a different meal time
+        - Click the 🔍 icon to view detailed nutrition information for a meal
+        - Click the 🗑️ icon to remove a meal from the program
+        
+        ### Navigation
+        
+        - Use the pagination controls to navigate through days in your program
+        - The current page number and total pages are shown in the center
+        
+        ### Program Management
+        
+        - To add or change meals in this program, use the "Edit Program" page
+        - To create a new program, use the "Create Program" page
+        """)
+
+main()
