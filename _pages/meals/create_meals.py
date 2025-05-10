@@ -66,7 +66,8 @@ def create_regular_meal(foods_df, profile_targets):
     with col1:
         meal_name = st.text_input("Meal Name", placeholder="e.g., High Protein Breakfast")
     with col2:
-        category = st.selectbox("Category", MealCategory.as_list())
+        # Include the new Lunch/Dinner category in the dropdown
+        category = st.selectbox("Category", MealCategory.as_list(), help="Select 'Lunch/Dinner' for meals that can be used for either lunch or dinner")
     
     st.divider()
     st.subheader("🍽️ Select Foods and Quantities")
@@ -120,7 +121,8 @@ def create_custom_meal(profile_targets):
     with col1:
         meal_name = st.text_input("Meal Name", placeholder="e.g., Restaurant Lunch", key="custom_meal_name")
     with col2:
-        category = st.selectbox("Category", MealCategory.as_list(), key="custom_category")
+        # Include the new Lunch/Dinner category in the dropdown
+        category = st.selectbox("Category", MealCategory.as_list(), key="custom_category", help="Select 'Lunch/Dinner' for meals that can be used for either lunch or dinner")
     
     st.divider()
     st.subheader("📊 Enter Macros")
@@ -213,6 +215,12 @@ def main():
         - Manually enter macro information
         - Useful for restaurant meals or packaged foods
         - When you know the nutrition facts but not the exact ingredients
+        
+        ### Using the Lunch/Dinner Category
+        
+        - Meals categorized as "Lunch/Dinner" can be assigned to either lunch or dinner meal times
+        - This is useful for versatile meals that work well for either time slot
+        - When creating meal programs, these meals will appear when selecting either lunch or dinner
         
         ### Tips for Good Meal Planning
         

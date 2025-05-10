@@ -252,7 +252,8 @@ def main():
             "category": st.column_config.SelectboxColumn(
                 "Category", 
                 options=MealCategory.as_list(), 
-                required=True
+                required=True,
+                help="Select 'Lunch/Dinner' for meals that can be used for either lunch or dinner"
             ),
             "calories": st.column_config.NumberColumn(
                 "Calories", 

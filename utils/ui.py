@@ -13,6 +13,7 @@ from typing import Dict, List, Tuple, Optional, Union, Any, Callable
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
+from utils.constants import MealTime
 from utils.nutrition import get_macro_distribution, get_macro_compliance
 
 def apply_page_setup(title: str, icon: str = "🥗", wide_layout: bool = True):
@@ -571,3 +572,43 @@ def create_pagination_controls(
                      key=f"next_button_{suffix}",
                    use_container_width=True):
             on_next()
+
+def get_flexible_meal_selection(
+    meals_df: pd.DataFrame,
+    meal_time: str,
+    filter_by_meal_time: bool = True,
+    key_prefix: str = ""
+) -> Tuple[Optional[str], Optional[pd.DataFrame]]:
+    """
+    Advanced meal selection that allows for flexible meal time filtering.
+    
+    Args:
+        meals_df: DataFrame containing all meals
+        meal_time: Selected meal time
+        filter_by_meal_time: Whether to filter meals by meal time category
+        key_prefix: Optional prefix for streamlit keys
+        
+    Returns:
+        Tuple of (meal_name, available_meals_df) or (None, None) if no meals available
+    """
+    # Get compatible categories for this meal time
+    if filter_by_meal_time:
+        compatible_categories = MealTime.get_compatible_categories(meal_time)
+        # Filter meals by compatible categories
+        available_meals = meals_df[meals_df['category'].isin(compatible_categories)]
+    else:
+        # When not filtering by meal time, show all meals
+        available_meals = meals_df
+    
+    if available_meals.empty:
+        st.warning(f"No meals available for this selection")
+        return None, None
+    
+    # Select a meal from available meals
+    meal = st.selectbox(
+        "Select Meal", 
+        available_meals['name'].tolist(),
+        key=f"{key_prefix}selected_meal"
+    )
+    
+    return meal, available_meals

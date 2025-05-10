@@ -241,7 +241,7 @@ def main():
         # Option to view program meals for this date
         if st.button("View Meal Programs", use_container_width=True):
             # Redirect to the program view page
-            st.switch_page("_pages/programs/view.py")
+            st.switch_page("_pages/programs/view_programs.py")
     
     # Load meals and tracked meals
     meals_df = load_meals()

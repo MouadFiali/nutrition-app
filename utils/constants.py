@@ -58,6 +58,7 @@ class MealCategory(Enum):
     BREAKFAST = "Breakfast"
     LUNCH = "Lunch"
     DINNER = "Dinner"
+    LUNCH_DINNER = "Lunch/Dinner"  # New category for meals suitable for both lunch and dinner
     SNACKS = "Snacks"
 
     @classmethod
@@ -97,6 +98,20 @@ class MealTime(Enum):
             raise ValueError(f"Unknown meal time: {meal_time}")
         
         return meal_time_to_category[meal_time]
+    
+    @classmethod
+    def get_compatible_categories(cls, meal_time: Union[str, 'MealTime']) -> List[str]:
+        """Get all meal categories compatible with a given meal time."""
+        # Standard mapping from meal time to primary category
+        primary_category = cls.get_category(meal_time)
+        categories = [primary_category]
+        
+        # Special cases for lunch and dinner - include the shared Lunch/Dinner category
+        if meal_time in [cls.LUNCH.value, cls.DINNER.value] or (
+            isinstance(meal_time, cls) and meal_time in [cls.LUNCH, cls.DINNER]):
+            categories.append(MealCategory.LUNCH_DINNER.value)
+            
+        return categories
 
 
 class FoodCategory(Enum):

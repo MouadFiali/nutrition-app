@@ -290,6 +290,14 @@ def main():
         - Click the 🔍 icon to view detailed nutrition information for a meal
         - Click the 🗑️ icon to remove a meal from the program
         
+        ### Meal Categories
+        
+        - **Breakfast**: Morning meals assigned to the Breakfast time slot
+        - **Lunch**: Midday meals assigned to the Lunch time slot
+        - **Dinner**: Evening meals assigned to the Dinner time slot
+        - **Lunch/Dinner**: Versatile meals that can be assigned to either Lunch or Dinner time slots
+        - **Snacks**: Smaller meals assigned to Morning Snack or Afternoon Snack time slots
+        
         ### Navigation
         
         - Use the pagination controls to navigate through days in your program

@@ -12,8 +12,8 @@ from utils.ui import (
     display_success_error,
     set_success_message,
     set_error_message,
-    get_meal_selection,
-    display_days_selection
+    display_days_selection,
+    get_flexible_meal_selection
 )
 
 # Initialize database
@@ -30,6 +30,8 @@ if 'current_program_id' not in st.session_state:
     st.session_state.current_program_id = None
 if 'create_program_tab' not in st.session_state:
     st.session_state.create_program_tab = "details"  # "details" or "assign"
+if 'filter_by_meal_time' not in st.session_state:
+    st.session_state.filter_by_meal_time = True
 
 def load_meals():
     """Load all meals"""
@@ -131,43 +133,39 @@ def meal_assignment_interface():
     if 'assign_days' not in st.session_state:
         st.session_state.assign_days = []
     
-    # Create the meal time to category mapping
-    meal_categories = {
-        meal_time: MealTime.get_category(meal_time)
-        for meal_time in MealTime.as_list()
-    }
-    
     # Meal selection
     col1, col2 = st.columns(2)
     
     with col1:
         meal_time = st.selectbox(
             "Meal Time", 
-            list(meal_categories.keys()),
+            MealTime.as_list(),
             index=MealTime.as_list().index(st.session_state.assign_meal_time) if st.session_state.assign_meal_time in MealTime.as_list() else 0,
             key="assign_meal_time_input"
         )
         st.session_state.assign_meal_time = meal_time
     
-    # Filter meals by category
-    category = meal_categories[meal_time]
-    available_meals = meals_df[meals_df['category'] == category]
-    
     with col2:
-        if not available_meals.empty:
-            meal = st.selectbox(
-                "Select Meal", 
-                available_meals['name'].tolist(),
-                index=available_meals['name'].tolist().index(st.session_state.assign_meal_name) if st.session_state.assign_meal_name in available_meals['name'].tolist() else 0,
-                key="assign_meal_input"
-            )
-            st.session_state.assign_meal_name = meal
-        else:
-            st.warning(f"No meals available for category: {category}")
-            meal = None
+        filter_by_meal_time = st.checkbox(
+            "Filter by meal time",
+            value=st.session_state.filter_by_meal_time,
+            help="When checked, only meals compatible with the selected meal time will be shown",
+            key="filter_by_meal_time_input"
+        )
+        st.session_state.filter_by_meal_time = filter_by_meal_time
+    
+    # Use the new flexible meal selection function
+    meal, available_meals = get_flexible_meal_selection(
+        meals_df,
+        meal_time,
+        filter_by_meal_time,
+        key_prefix="assign_"
+    )
     
     if meal is None:
         return
+    
+    st.session_state.assign_meal_name = meal
     
     # Date range selection
     st.divider()
@@ -276,16 +274,13 @@ def main():
         
         3. **Variety is Key**: Include different meals across the week to prevent boredom and ensure nutritional diversity.
         
-        4. **Batch Cook**: Schedule similar meals on consecutive days to make batch cooking easier.
+        4. **Using the Lunch/Dinner Category**: Meals categorized as "Lunch/Dinner" can be assigned to either lunch or dinner time slots.
         
-        5. **Balance Your Macros**: Ensure each day has a good balance of proteins, carbs, and fats according to your goals.
+        5. **Flexible Filtering**: You can uncheck "Filter by meal time" to see all available meals regardless of their category.
         
-        ### Using This Page
+        6. **Batch Cook**: Schedule similar meals on consecutive days to make batch cooking easier.
         
-        - First, create a program by giving it a name, start date, and duration
-        - Then, assign meals to specific days and meal times
-        - You can apply meals to multiple days at once by selecting a date range and days of the week
-        - To create a new program, click "Create Another Program"
+        7. **Balance Your Macros**: Ensure each day has a good balance of proteins, carbs, and fats according to your goals.
         """)
 
 # Run the main function when this page is loaded

@@ -13,7 +13,8 @@ from utils.ui import (
     display_success_error,
     set_success_message,
     set_error_message,
-    display_days_selection
+    display_days_selection,
+    get_flexible_meal_selection
 )
 
 # Initialize database
@@ -32,6 +33,8 @@ if 'edit_end_date' not in st.session_state:
     st.session_state.edit_end_date = datetime.now().date()
 if 'edit_selected_days' not in st.session_state:
     st.session_state.edit_selected_days = []
+if 'filter_by_meal_time' not in st.session_state:
+    st.session_state.filter_by_meal_time = True
 
 def load_meals():
     """Load all meals"""
@@ -95,48 +98,39 @@ def meal_assignment_interface(program_data):
     st.divider()
     st.subheader("🗓️ Add or Replace Meals")
     
-    # Create the meal time to category mapping
-    meal_categories = {
-        meal_time: MealTime.get_category(meal_time)
-        for meal_time in MealTime.as_list()
-    }
-    
     # Meal selection
     col1, col2 = st.columns(2, vertical_alignment="bottom")
     
     with col1:
         meal_time = st.selectbox(
             "Meal Time", 
-            list(meal_categories.keys()),
+            MealTime.as_list(),
             index=MealTime.as_list().index(st.session_state.edit_meal_time) if st.session_state.edit_meal_time in MealTime.as_list() else 0,
             key="edit_meal_time_selector"
         )
         st.session_state.edit_meal_time = meal_time
     
-    # Filter meals by appropriate category
-    category = meal_categories[meal_time]
-    available_meals = meals_df[meals_df['category'] == category]
-    
     with col2:
-        if not available_meals.empty:
-            # Check if previous selection is in available meals
-            default_index = 0
-            if st.session_state.edit_meal_name in available_meals['name'].values:
-                default_index = available_meals['name'].tolist().index(st.session_state.edit_meal_name)
-            
-            meal = st.selectbox(
-                "Select Meal", 
-                available_meals['name'].tolist(),
-                index=default_index,
-                key="edit_meal_selector"
-            )
-            st.session_state.edit_meal_name = meal
-        else:
-            st.warning(f"No meals available for category: {category}")
-            meal = None
+        filter_by_meal_time = st.checkbox(
+            "Filter by meal time",
+            value=st.session_state.filter_by_meal_time,
+            help="When checked, only meals compatible with the selected meal time will be shown",
+            key="filter_by_meal_time_input"
+        )
+        st.session_state.filter_by_meal_time = filter_by_meal_time
+    
+    # Use the new flexible meal selection function
+    meal, available_meals = get_flexible_meal_selection(
+        meals_df,
+        meal_time,
+        filter_by_meal_time,
+        key_prefix="edit_"
+    )
     
     if meal is None:
         return
+    
+    st.session_state.edit_meal_name = meal
     
     # Date range selection
     st.divider()
@@ -224,16 +218,13 @@ def main():
             
             3. **Remove Meals**: Use the 🗑️ button next to each meal in the calendar to remove it.
             
-            4. **Planning Ahead**: Consider your nutritional goals when planning each day, aiming for balanced macros.
+            4. **Using the Lunch/Dinner Category**: Meals categorized as "Lunch/Dinner" can be assigned to either lunch or dinner time slots.
             
-            5. **Create Templates**: Set up a pattern for weekdays vs weekends to make meal planning easier.
+            5. **Flexible Filtering**: You can uncheck "Filter by meal time" to see all available meals regardless of their category.
             
-            ### Using This Page
+            6. **Planning Ahead**: Consider your nutritional goals when planning each day, aiming for balanced macros.
             
-            - Use the top section to add or replace meals in your program
-            - The calendar below shows all currently scheduled meals
-            - You can add the same meal to multiple days at once
-            - To completely replace a program, delete it and create a new one
+            7. **Create Templates**: Set up a pattern for weekdays vs weekends to make meal planning easier.
             """)
 
 # Run the main function when this page is loaded

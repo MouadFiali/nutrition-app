@@ -263,11 +263,13 @@ def handle_meal_edit(meal_to_edit, foods_df, target_calories, protein_target, ca
         )
         st.session_state.edit_meal_name = new_name
     with col2:
+        # Include the new Lunch/Dinner category in the dropdown
         new_category = st.selectbox(
             "Category", 
             MealCategory.as_list(),
             index=MealCategory.as_list().index(st.session_state.edit_meal_category) if st.session_state.edit_meal_category in MealCategory.as_list() else 0,
-            key="edit_meal_category_input"
+            key="edit_meal_category_input",
+            help="Select 'Lunch/Dinner' for meals that can be used for either lunch or dinner"
         )
         st.session_state.edit_meal_category = new_category
     
