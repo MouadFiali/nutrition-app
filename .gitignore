@@ -1,3 +1,4 @@
 .food-env/
 __pycache__/
 nutrition_app.db
+.vscode/

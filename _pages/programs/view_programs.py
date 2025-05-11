@@ -154,6 +154,61 @@ def show_nutrition_info(meal_data):
         else:
             st.info("This meal has no registered ingredients.", icon="🥺")
 
+@st.dialog("Add Meal", width="large")
+def show_add_meal_dialog(program_id, date_str, meal_time):
+    """Display dialog for adding a meal to a specific time slot"""
+    # Format date and meal time for display
+    date_display = datetime.strptime(date_str, '%Y-%m-%d').strftime('%A, %B %d')
+    
+    st.subheader(f"Add a meal for {date_display} - {meal_time}")
+    
+    # Load all meals
+    meals_df = db.get_all_meals()
+    
+    if meals_df.empty:
+        st.warning("No meals available. Please create some meals first!")
+        return
+    
+    # Select a meal
+    selected_meal = st.selectbox(
+        "Choose a meal",
+        meals_df['name'].tolist(),
+        index=0
+    )
+    
+    # Get meal details for preview
+    meal_data = meals_df[meals_df['name'] == selected_meal].iloc[0]
+    
+    # Show meal preview
+    st.write("#### Meal Preview")
+    
+    # Display meal type and category
+    st.caption(f"Type: {meal_data['type'].title()} | Category: {meal_data['category']}")
+    
+    # Calculate and display macros
+    macros = calculate_meal_macros_from_record(meal_data)
+    
+    # Display macros in columns
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Calories", f"{macros['calories']:.0f} kcal")
+    with col2:
+        st.metric("Protein", f"{macros['proteins']:.1f}g")
+    with col3:
+        st.metric("Carbs", f"{macros['carbs']:.1f}g")
+    with col4:
+        st.metric("Fat", f"{macros['fats']:.1f}g")
+    
+    # Add button
+    if st.button("Add Meal", type="primary", use_container_width=True):
+        meal_id = meal_data['id']
+        if db.update_program_meal(int(program_id), int(meal_id), date_str, meal_time):
+            st.session_state.show_add_meal_dialog = False
+            set_success_message(f"Added {selected_meal} to {date_display} - {meal_time}")
+            st.rerun()
+        else:
+            st.error("Failed to add meal. Please try again.")
+
 def delete_program_meal(program_id, date_str, meal_time):
     """Delete a meal from the program"""
     if db.delete_program_meal(program_id, date_str, meal_time):
@@ -193,7 +248,10 @@ def display_meal_day(date, day_meals, program_id):
                         if st.button("🗑️", key=f"delete_{meal_unique_id}_{date_str}", help="Remove meal"):
                             delete_program_meal(program_id, date_str, meal_time)
             else:
-                st.caption("No meal assigned")
+                # Display "No meal assigned" with an Add button
+                st.text("No meal assigned")
+                if st.button("➕", key=f"add_{date_str}_{meal_time}", help="Add meal"):
+                    show_add_meal_dialog(program_id, date_str, meal_time)
 
 def main():
     """Main function for the View Programs page"""
@@ -289,6 +347,7 @@ def main():
         - Each column represents a different meal time
         - Click the 🔍 icon to view detailed nutrition information for a meal
         - Click the 🗑️ icon to remove a meal from the program
+        - Click the ➕ icon to quickly add a meal to an empty slot
         
         ### Meal Categories
         

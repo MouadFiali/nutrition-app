@@ -593,9 +593,9 @@ def get_flexible_meal_selection(
     """
     # Get compatible categories for this meal time
     if filter_by_meal_time:
-        compatible_categories = MealTime.get_compatible_categories(meal_time)
+        category = MealTime.get_category(meal_time)
         # Filter meals by compatible categories
-        available_meals = meals_df[meals_df['category'].isin(compatible_categories)]
+        available_meals = meals_df[meals_df['category'] == category]
     else:
         # When not filtering by meal time, show all meals
         available_meals = meals_df
