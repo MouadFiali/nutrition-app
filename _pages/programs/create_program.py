@@ -40,6 +40,45 @@ def load_meals():
         return pd.DataFrame()
     return meals_df
 
+def check_overlapping_programs(start_date, end_date):
+    """
+    Check if there are any existing programs that overlap with the given date range.
+    
+    Args:
+        start_date: Start date of the new program
+        end_date: End date of the new program
+        
+    Returns:
+        tuple: (overlap_exists, overlapping_programs_data)
+    """
+    # Get all existing programs
+    programs = db.get_all_programs()
+    if programs.empty:
+        return False, None
+    
+    # Convert input dates to datetime if they aren't already
+    if not isinstance(start_date, pd.Timestamp):
+        start_date = pd.to_datetime(start_date)
+    if not isinstance(end_date, pd.Timestamp):
+        end_date = pd.to_datetime(end_date)
+    
+    # Convert program dates to datetime objects
+    programs['start_date'] = pd.to_datetime(programs['start_date'])
+    programs['end_date'] = pd.to_datetime(programs['end_date'])
+    
+    # Check for overlaps
+    # An overlap occurs if the start date of one program is between the start and end dates of another program,
+    # or if the end date of one program is between the start and end dates of another program,
+    # or if one program completely contains the other.
+    overlapping_programs = programs[
+        ((programs['start_date'] <= end_date) & (programs['end_date'] >= start_date))
+    ]
+    
+    if overlapping_programs.empty:
+        return False, None
+    
+    return True, overlapping_programs[['id', 'name', 'start_date', 'end_date']]
+
 def create_program_interface():
     """Display interface for creating a new program without forms"""
     st.subheader("📝 Create New Program")
@@ -76,16 +115,41 @@ def create_program_interface():
     # Calculate end date
     end_date = start_date + timedelta(days=duration-1)
     
+    # Check for overlapping programs
+    has_overlap, overlapping_programs = check_overlapping_programs(start_date, end_date)
+    
+    if has_overlap:
+        st.error("❌ The selected date range overlaps with existing programs!")
+        
+        # Display overlapping programs in a table
+        overlap_df = pd.DataFrame({
+            "Program Name": overlapping_programs['name'],
+            "Start Date": overlapping_programs['start_date'].dt.strftime('%Y-%m-%d'),
+            "End Date": overlapping_programs['end_date'].dt.strftime('%Y-%m-%d')
+        })
+        
+        st.dataframe(
+            overlap_df,
+            hide_index=True,
+            use_container_width=True
+        )
+        
+        st.info("Please adjust your dates to avoid overlaps. Only one program can be active at a time to ensure accurate meal tracking and comparison reports.")
+    
     # Create program button
-    if st.button("Create Program", type="primary", disabled=not program_name, key="create_program_button"):
-        program_id = db.save_meal_program(program_name, start_date, end_date)
-        if program_id:
-            st.session_state.current_program_id = program_id
-            st.session_state.create_program_tab = "assign"
-            set_success_message("Program created! Now you can assign meals.")
-            st.rerun()
+    if st.button("Create Program", type="primary", disabled=not program_name or has_overlap, key="create_program_button"):
+        if not has_overlap:
+            program_id = db.save_meal_program(program_name, start_date, end_date)
+            if program_id:
+                st.session_state.current_program_id = program_id
+                st.session_state.create_program_tab = "assign"
+                set_success_message("Program created! Now you can assign meals.")
+                st.rerun()
+            else:
+                set_error_message("Failed to create program!")
+                st.rerun()
         else:
-            set_error_message("Failed to create program!")
+            set_error_message("Please resolve the overlapping programs before creating a new one.")
             st.rerun()
 
 def meal_assignment_interface():
@@ -281,6 +345,9 @@ def main():
         6. **Batch Cook**: Schedule similar meals on consecutive days to make batch cooking easier.
         
         7. **Balance Your Macros**: Ensure each day has a good balance of proteins, carbs, and fats according to your goals.
+        
+        8. **No Overlapping Programs**: Programs cannot overlap with each other to ensure accurate tracking and comparison reports. 
+           Adjust your dates to create programs that don't conflict with existing ones.
         """)
 
 # Run the main function when this page is loaded
