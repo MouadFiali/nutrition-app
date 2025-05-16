@@ -1,8 +1,8 @@
 """
 Nutrition Planner App - Test Data Generator Part 3: Creating Meal Programs
 
-This script creates a meal program for May 2025:
-- Creates a month-long program starting from May 1, 2025
+This script creates a meal program for the last 30 days up to today:
+- Creates a 30-day program starting from 30 days ago
 - Assigns different meals for each day and meal time
 - Creates realistic meal patterns (e.g., same breakfast on weekdays)
 """
@@ -23,13 +23,21 @@ from utils.constants import FoodCategory, MealCategory, MealTime, ActivityLevel,
 db = NutritionDB()
 
 def create_meal_program():
-    """Create a meal program for May 2025"""
+    """Create a meal program for the last 30 days up to today"""
     print("Creating meal program...")
     
-    # Program details
-    program_name = "May 2025 Meal Plan"
-    start_date = datetime(2025, 5, 1).date()
-    end_date = datetime(2025, 5, 31).date()
+    # Calculate program dates based on today's date
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=29)  # 30 days including today
+    
+    # Format the program name based on the date range
+    start_month = start_date.strftime("%B")
+    end_month = end_date.strftime("%B")
+    
+    if start_month == end_month:
+        program_name = f"{start_month} {start_date.year} Meal Plan"
+    else:
+        program_name = f"{start_month}-{end_month} {end_date.year} Meal Plan"
     
     # Create the program
     program_id = db.save_meal_program(program_name, start_date, end_date)
@@ -39,6 +47,7 @@ def create_meal_program():
         return
     
     print(f"Created program: {program_name} (ID: {program_id})")
+    print(f"Date range: {start_date} to {end_date}")
     
     # Load all available meals
     all_meals = db.get_all_meals()
@@ -62,14 +71,27 @@ def create_meal_program():
     weekend_breakfast = get_random_meal_id(breakfast_meals)
     
     # Different lunch options for variety
-    lunch_options = [get_random_meal_id(lunch_meals) for _ in range(3)]
+    lunch_options = [get_random_meal_id(lunch_meals) for _ in range(min(3, len(lunch_meals)))]
+    if not lunch_options:
+        print("Warning: No lunch meals available.")
+        lunch_options = [get_random_meal_id(all_meals)]
     
     # Different dinner options
-    dinner_options = [get_random_meal_id(dinner_meals) for _ in range(3)]
+    dinner_options = [get_random_meal_id(dinner_meals) for _ in range(min(3, len(dinner_meals)))]
+    if not dinner_options:
+        print("Warning: No dinner meals available.")
+        dinner_options = [get_random_meal_id(all_meals)]
     
     # Snack options
-    morning_snack_options = [get_random_meal_id(snack_meals) for _ in range(2)]
-    afternoon_snack_options = [get_random_meal_id(snack_meals) for _ in range(2)]
+    morning_snack_options = [get_random_meal_id(snack_meals) for _ in range(min(2, len(snack_meals)))]
+    if not morning_snack_options:
+        print("Warning: No snack meals available for morning.")
+        morning_snack_options = [get_random_meal_id(all_meals)]
+        
+    afternoon_snack_options = [get_random_meal_id(snack_meals) for _ in range(min(2, len(snack_meals)))]
+    if not afternoon_snack_options:
+        print("Warning: No snack meals available for afternoon.")
+        afternoon_snack_options = [get_random_meal_id(all_meals)]
     
     # Assign meals for each day in the program
     meals_added = 0
@@ -80,30 +102,33 @@ def create_meal_program():
         
         # Assign breakfast
         breakfast_id = weekend_breakfast if is_weekend else weekday_breakfast
-        db.add_meal_to_program(program_id, breakfast_id, current_date, MealTime.BREAKFAST.value)
-        meals_added += 1
+        if breakfast_id:
+            db.add_meal_to_program(program_id, breakfast_id, current_date, MealTime.BREAKFAST.value)
+            meals_added += 1
         
         # Assign morning snack (not every day)
-        if random.random() > 0.3:  # 70% chance of having a morning snack
+        if random.random() > 0.3 and morning_snack_options:  # 70% chance of having a morning snack
             morning_snack_id = random.choice(morning_snack_options)
             db.add_meal_to_program(program_id, morning_snack_id, current_date, MealTime.MORNING_SNACK.value)
             meals_added += 1
         
         # Assign lunch
-        lunch_id = random.choice(lunch_options)
-        db.add_meal_to_program(program_id, lunch_id, current_date, MealTime.LUNCH.value)
-        meals_added += 1
+        if lunch_options:
+            lunch_id = random.choice(lunch_options)
+            db.add_meal_to_program(program_id, lunch_id, current_date, MealTime.LUNCH.value)
+            meals_added += 1
         
         # Assign afternoon snack (not every day)
-        if random.random() > 0.4:  # 60% chance of having an afternoon snack
+        if random.random() > 0.4 and afternoon_snack_options:  # 60% chance of having an afternoon snack
             afternoon_snack_id = random.choice(afternoon_snack_options)
             db.add_meal_to_program(program_id, afternoon_snack_id, current_date, MealTime.AFTERNOON_SNACK.value)
             meals_added += 1
         
         # Assign dinner
-        dinner_id = random.choice(dinner_options)
-        db.add_meal_to_program(program_id, dinner_id, current_date, MealTime.DINNER.value)
-        meals_added += 1
+        if dinner_options:
+            dinner_id = random.choice(dinner_options)
+            db.add_meal_to_program(program_id, dinner_id, current_date, MealTime.DINNER.value)
+            meals_added += 1
         
         # Move to next day
         current_date += timedelta(days=1)

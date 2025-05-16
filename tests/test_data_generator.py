@@ -76,7 +76,7 @@ def generate_all_test_data():
     print("- Multiple regular and custom meals for each meal category")
     print("- A meal program for May 2025")
     print("- Tracked meals from May 1-16, 2025")
-    print("\nYou can now test all functionality of the Nutrition Planner app.")
+    print("\nYou can now test all functionality of the Nutrition app.")
 
 if __name__ == "__main__":
     generate_all_test_data()
