@@ -23,6 +23,7 @@ def display_welcome_message():
     - 🍎 **Manage food sources** and their nutritional content
     - 📋 **Plan your meals** based on your goals
     - 📅 **Create meal programs** for specific periods
+    - 📊 **Analyze program adherence** and compare planned vs. actual meals
     - 📈 **Track your progress** over time
     """)
 
@@ -48,28 +49,28 @@ def display_profile_summary(profile):
         st.info(stats_text)
 
 def display_get_started():
-    """Display getting started section for new users"""
+    """Display getting started section with consistent card styling"""
     st.header("📋 Getting Started")
     
+    # First row: Profile, Food, Meals
     col1, col2, col3 = st.columns(3)
     
     with col1:
         with st.container(border=True):
             st.subheader("1️⃣ Set Up Your Profile")
+            st.markdown("Begin by setting up your profile with your personal information:")
             st.markdown("""
-            Begin by setting up your profile with your personal information:
             - Weight and height
             - Age and gender
-            - Activity level
-            - Nutrition goals
+            - Activity level & Nutritional goals
             """)
             st.page_link("_pages/account/profile/edit_profile.py", label="Edit Profile", icon="👤")
     
     with col2:
         with st.container(border=True):
             st.subheader("2️⃣ Add Food Sources")
+            st.markdown("Add the foods you commonly eat to your food database:")
             st.markdown("""
-            Add the foods you commonly eat to your food database:
             - Create a personal food library
             - Track nutritional information
             - Use these foods in your meals
@@ -79,23 +80,25 @@ def display_get_started():
     with col3:
         with st.container(border=True):
             st.subheader("3️⃣ Create Meals")
+            st.markdown("Create meals from your food sources:")
             st.markdown("""
-            Create meals from your food sources:
             - Build regular meals from your foods
             - Add custom meals with known macros
             - Use these meals in your programs
             """)
             st.page_link("_pages/meals/create_meals.py", label="Create Meals", icon="🍽️")
             
-    # Second row for steps 4-5
-    st.write("")  # Add some spacing
-    col4, col5 = st.columns(2)
+    # Add some spacing between rows
+    st.write("")
+    
+    # Second row: Programs, Progress, Adherence
+    col4, col5, col6 = st.columns(3)
     
     with col4:
         with st.container(border=True):
             st.subheader("4️⃣ Plan Your Meals")
+            st.markdown("Create meal programs for specific time periods:")
             st.markdown("""
-            Create meal programs for specific time periods:
             - Schedule meals for days or weeks
             - Balance your nutrition throughout the week
             - Plan ahead for your goals
@@ -105,19 +108,30 @@ def display_get_started():
     with col5:
         with st.container(border=True):
             st.subheader("5️⃣ Track Your Progress")
+            st.markdown("Log your meals and track your progress:")
             st.markdown("""
-            Log your meals and track your progress:
             - Record what you actually eat
             - Monitor your nutritional intake
             - Visualize your progress over time
             """)
             st.page_link("_pages/tracking/log.py", label="Log Meals", icon="📝")
+    
+    with col6:
+        with st.container(border=True):
+            st.subheader("6️⃣ Analyze Adherence")
+            st.markdown("Compare your planned meals with actual consumption:")
+            st.markdown("""
+            - See how closely you follow your plan
+            - Identify substitution patterns
+            - Improve your meal planning strategy
+            """)
+            st.page_link("_pages/tracking/program_adherence.py", label="Program Adherence", icon="📊")
 
 def display_app_stats():
     """Display application statistics"""
     st.header("📊 App Statistics")
     
-    # Get database statistics using the new db_manager function
+    # Get database statistics
     stats = db.get_app_stats()
     
     # Display stats in columns
