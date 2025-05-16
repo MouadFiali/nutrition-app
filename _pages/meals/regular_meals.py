@@ -432,7 +432,7 @@ def main():
         elif len(selected_meals) == 1:
             # Use the single selected meal
             selected_meal = selected_meals.iloc[0]
-            meal_id = int(selected_meal['id'])
+            meal_id = selected_meal['id']
             
             # Store the selected meal id in session state
             st.session_state.selected_meal_id = meal_id
@@ -483,7 +483,7 @@ def main():
                 with col1:
                     if st.button("💾 Save Changes", type="primary", disabled=not (new_name and new_quantities), use_container_width=True):
                         if db.update_meal(
-                            int(meal_to_edit['id']),
+                            meal_to_edit['id'],
                             new_name,
                             new_category,
                             foods_quantities=new_quantities

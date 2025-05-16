@@ -117,39 +117,23 @@ def display_app_stats():
     """Display application statistics"""
     st.header("📊 App Statistics")
     
-    # Get database statistics
-    conn = db.get_connection()
-    c = conn.cursor()
-    
-    # Count items in each table
-    c.execute("SELECT COUNT(*) FROM food_sources")
-    food_count = c.fetchone()[0]
-    
-    c.execute("SELECT COUNT(*) FROM meals")
-    meal_count = c.fetchone()[0]
-    
-    c.execute("SELECT COUNT(*) FROM meal_programs")
-    program_count = c.fetchone()[0]
-    
-    c.execute("SELECT COUNT(*) FROM meal_tracking")
-    tracking_count = c.fetchone()[0]
-    
-    conn.close()
+    # Get database statistics using the new db_manager function
+    stats = db.get_app_stats()
     
     # Display stats in columns
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric("Food Sources", food_count)
+        st.metric("Food Sources", stats["food_sources"])
     
     with col2:
-        st.metric("Meals Created", meal_count)
+        st.metric("Meals Created", stats["meals"])
     
     with col3:
-        st.metric("Meal Programs", program_count)
+        st.metric("Meal Programs", stats["meal_programs"])
     
     with col4:
-        st.metric("Meals Tracked", tracking_count)
+        st.metric("Meals Tracked", stats["meal_tracking"])
 
 def main():
     """Main function for the Home page"""

@@ -91,7 +91,7 @@ def delete_meals_with_confirmation(meal_ids, meal_names):
         # No meals in programs, delete directly
         deleted_meals = 0
         for meal_id in meal_ids:
-            if db.delete_meal(int(meal_id)):
+            if db.delete_meal(meal_id):
                 deleted_meals += 1
         
         if deleted_meals == len(meal_ids):

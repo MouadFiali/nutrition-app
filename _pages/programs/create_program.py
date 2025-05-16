@@ -214,8 +214,8 @@ def meal_assignment_interface():
         for date in dates:
             if date.weekday() in selected_days:
                 if db.update_program_meal(
-                    int(program_data['id']),
-                    int(meal_id),
+                    program_data['id'],
+                    meal_id,
                     date.strftime('%Y-%m-%d'),
                     meal_time
                 ):

@@ -202,13 +202,10 @@ def display_tracked_meals(tracked_meals, tracking_date):
             with col2:
                 if st.button("🗑️", key=f"delete_{meal['id']}"):
                     # Option to delete the meal tracking entry
-                    # Note: Requires adding a delete_tracked_meal function to the database
-                    conn = db.get_connection()
-                    c = conn.cursor()
-                    c.execute('DELETE FROM meal_tracking WHERE id = ?', (meal['id'],))
-                    conn.commit()
-                    conn.close()
-                    set_success_message(f"Removed {meal['meal_name']} from tracking")
+                    if db.delete_tracked_meal(meal['id']):
+                        set_success_message(f"Removed {meal['meal_name']} from tracking")
+                    else:
+                        set_error_message(f"Failed to remove {meal['meal_name']} from tracking")
                     st.rerun()
 
 def main():
@@ -229,7 +226,7 @@ def main():
     _, target_calories, protein_target, carbs_target, fats_target = profile_targets
     
     # Date selection (defaults to today)
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([3, 1], vertical_alignment="bottom")
     with col1:
         tracking_date = st.date_input(
             "📅 Select Date", 

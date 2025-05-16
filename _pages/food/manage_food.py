@@ -49,101 +49,12 @@ def update_food_source(food_id, name, category, calories, proteins, carbs, fats,
     st.rerun()
 
 def check_food_in_meals(food_names):
-    """
-    Check if food sources are used in any meals.
-    
-    Args:
-        food_names: List of food names to check
-        
-    Returns:
-        Dict with usage information if foods are in use
-    """
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    
-    # Create placeholders for the IN clause
-    placeholders = ','.join(['?'] * len(food_names))
-    
-    # Query to find which meals use these foods
-    query = f"""
-        SELECT f.name as food_name, m.id as meal_id, m.name as meal_name, mf.quantity
-        FROM food_sources f
-        JOIN meal_foods mf ON f.id = mf.food_id
-        JOIN meals m ON mf.meal_id = m.id
-        WHERE f.name IN ({placeholders})
-    """
-    
-    cursor.execute(query, food_names)
-    results = cursor.fetchall()
-    conn.close()
-    
-    if not results:
-        return None
-    
-    # Organize results by food name
-    foods_in_meals = {}
-    meals_set = set()
-    meal_names = {}
-    
-    for row in results:
-        food_name, meal_id, meal_name, quantity = row
-        
-        if food_name not in foods_in_meals:
-            foods_in_meals[food_name] = []
-        
-        foods_in_meals[food_name].append({
-            'meal_id': meal_id,
-            'meal_name': meal_name,
-            'quantity': quantity
-        })
-        
-        meals_set.add(meal_id)
-        meal_names[meal_id] = meal_name
-    
-    return {
-        'foods_in_meals': foods_in_meals,
-        'total_meals': len(meals_set),
-        'meals': [{'id': mid, 'name': meal_names[mid]} for mid in meals_set]
-    }
+    """Check if food sources are used in any meals."""
+    return db.check_food_in_meals(food_names)
 
 def check_meals_in_programs(meal_ids):
-    """
-    Check if any meals are used in programs.
-    
-    Args:
-        meal_ids: List of meal IDs to check
-        
-    Returns:
-        Dict with program info if meals are in programs
-    """
-    if not meal_ids:
-        return None
-    
-    conn = db.get_connection()
-    cursor = conn.cursor()
-    
-    # Create placeholders for the IN clause
-    placeholders = ','.join(['?'] * len(meal_ids))
-    
-    # Query to find which programs use these meals
-    query = f"""
-        SELECT DISTINCT p.id, p.name
-        FROM meal_programs p
-        JOIN program_meals pm ON p.id = pm.program_id
-        WHERE pm.meal_id IN ({placeholders})
-    """
-    
-    cursor.execute(query, meal_ids)
-    results = cursor.fetchall()
-    conn.close()
-    
-    if not results:
-        return None
-    
-    return {
-        'programs': results,
-        'total_programs': len(results)
-    }
+    """Check if any meals are used in programs."""
+    return db.check_meals_in_programs(meal_ids)
 
 def delete_food_sources(food_names):
     """Delete food sources with confirmation if they are used in meals"""

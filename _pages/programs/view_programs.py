@@ -217,7 +217,7 @@ def show_nutrition_info(meal_data):
         
         # Get the food sources for the meal if not already in the data
         if 'foods' not in meal_data:
-            meal_details = db.get_meal_with_foods(int(meal_data['meal_id']))
+            meal_details = db.get_meal_with_foods(meal_data['meal_id'])
             food_sources = meal_details.get('foods', []) if meal_details else []
         else:
             food_sources = meal_data['foods']
@@ -310,7 +310,7 @@ def show_meal_dialog(program_id, date_str, meal_time, existing_meal=None, is_edi
     button_label = "Update Meal" if is_edit_mode else "Add Meal"
     if st.button(button_label, type="primary", use_container_width=True):
         meal_id = meal_data['id']
-        if db.update_program_meal(int(program_id), int(meal_id), date_str, meal_time):
+        if db.update_program_meal(program_id, meal_id, date_str, meal_time):
             action_text = "updated" if is_edit_mode else "added"
             set_success_message(f"{selected_meal} {action_text} for {date_display} - {meal_time}")
             st.rerun()
@@ -447,7 +447,7 @@ def main():
     # Display delete button
     with col2:
         if st.button("🗑️ Delete Program", key="delete_program", use_container_width=True):
-            if db.delete_program(int(program_data['id'])):
+            if db.delete_program(program_data['id']):
                 set_success_message(f"Program '{selected_program}' deleted!")
                 st.rerun()
     
@@ -457,7 +457,7 @@ def main():
     display_dates(program_data)
     
     # Get program meals
-    program_id = int(program_data['id'])
+    program_id = program_data['id']
     program_meals = db.get_program_meals(program_id)
     
     if program_meals.empty:
