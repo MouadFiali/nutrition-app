@@ -87,6 +87,7 @@ program_edit_page = st.Page("_pages/programs/edit_program.py", title="Edit Progr
 # Tracking section
 tracking_log_page = st.Page("_pages/tracking/log.py", title="Log Meals", icon="📝")
 tracking_progress_page = st.Page("_pages/tracking/progress.py", title="Track Progress", icon="📈")
+program_adherence_page  = st.Page("_pages/tracking/program_adherence.py", title="Program Adherence", icon="📊")
 
 # Set up navigation with sections
 navigation = st.navigation({
@@ -95,7 +96,7 @@ navigation = st.navigation({
     "Food Sources": [food_add_page, food_manage_page],
     "Meal Management": [meal_create_page, meal_regular_page, meal_custom_page],
     "Meal Programs": [program_view_page, program_create_page, program_edit_page],
-    "Tracking": [tracking_log_page, tracking_progress_page]
+    "Tracking": [tracking_log_page, tracking_progress_page, program_adherence_page ]
 })
 
 # Apply custom CSS
