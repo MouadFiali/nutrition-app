@@ -1,5 +1,5 @@
 """
-Custom Meals Management page for the Nutrition Planner application.
+Custom Meals Management page for the Nutrition App.
 
 This page allows users to view, edit, and delete custom meals.
 """

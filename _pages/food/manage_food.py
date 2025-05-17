@@ -1,5 +1,5 @@
 """
-Food Management page for the Nutrition Planner application.
+Food Management page for the Nutrition App.
 
 This page allows users to view, edit, and delete food sources.
 """

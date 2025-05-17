@@ -1,5 +1,5 @@
 """
-Nutrition Planner App - Test Data Generator Part 3: Creating Meal Programs
+Nutrition App - Test Data Generator Part 3: Creating Meal Programs
 
 This script creates a meal program for the last 30 days up to today:
 - Creates a 30-day program starting from 30 days ago

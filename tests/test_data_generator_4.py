@@ -1,5 +1,5 @@
 """
-Nutrition Planner App - Test Data Generator Part 4: Creating Meal Tracking Data
+Nutrition App - Test Data Generator Part 4: Creating Meal Tracking Data
 
 This script creates meal tracking data for the most recent meal program or the last 15 days:
 - Tracks meals based on the created meal program if available

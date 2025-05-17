@@ -1,5 +1,5 @@
 """
-Constants module for the Nutrition Planner application.
+Constants module for the Nutrition App.
 
 This module defines enums and constants used throughout the application to ensure
 consistency and maintainability.

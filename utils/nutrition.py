@@ -1,5 +1,5 @@
 """
-Nutrition calculation utilities for the Nutrition Planner application.
+Nutrition calculation utilities for the Nutrition App.
 
 This module provides common functions for calculating nutritional data:
 - BMR (Basal Metabolic Rate)

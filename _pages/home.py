@@ -1,5 +1,5 @@
 """
-Home page for the Nutrition Planner application.
+Home page for the Nutrition App.
 
 This is the landing page that provides an overview of the application
 and displays summary information if a profile exists.
@@ -151,7 +151,7 @@ def display_app_stats():
 
 def main():
     """Main function for the Home page"""
-    st.title("🥗 Nutrition Planner")
+    st.title("🥗 Nutrition App")
     
     # Display welcome message
     display_welcome_message()

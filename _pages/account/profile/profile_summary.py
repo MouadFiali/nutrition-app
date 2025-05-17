@@ -1,5 +1,5 @@
 """
-Profile summary page for the Nutrition Planner application.
+Profile summary page for the Nutrition App.
 
 This page displays a summary of the user's profile information,
 calculated metrics (BMR, TDEE), and nutritional targets.

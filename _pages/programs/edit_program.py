@@ -1,5 +1,5 @@
 """
-Edit Program page for the Nutrition Planner application.
+Edit Program page for the Nutrition App.
 
 This page allows users to edit existing meal programs by adding,
 modifying, or removing scheduled meals.

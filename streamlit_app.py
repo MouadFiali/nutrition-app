@@ -1,7 +1,7 @@
 """
-Nutrition Planner - Main Application
+Nutrition App - Main Application
 
-This is the main entry point for the Nutrition Planner application.
+This is the main entry point for the Nutrition App application.
 It defines the navigation structure and common elements for all pages.
 """
 import streamlit as st
@@ -56,7 +56,7 @@ CUSTOM_CSS = """
 
 # Page configuration
 st.set_page_config(
-    page_title="Nutrition Planner",
+    page_title="Nutrition App",
     page_icon="🥗",
     layout="wide",
     initial_sidebar_state="expanded"

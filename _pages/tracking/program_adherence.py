@@ -1,5 +1,5 @@
 """
-Program Adherence page for the Nutrition Planner application.
+Program Adherence page for the Nutrition App.
 
 This page allows users to compare their planned meals from programs
 with the actual meals they logged, showing compliance and nutrition differences.

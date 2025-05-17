@@ -1,5 +1,5 @@
 """
-UI utilities for the Nutrition Planner application.
+UI utilities for the Nutrition App.
 
 This module provides common UI functions and components used across multiple pages:
 - Displaying metrics and summaries
@@ -28,13 +28,13 @@ def apply_page_setup(title: str, icon: str = "🥗", wide_layout: bool = True):
     # Set page title and icon
     if wide_layout:
         st.set_page_config(
-            page_title=f"{title} - Nutrition Planner",
+            page_title=f"{title} - Nutrition App",
             page_icon=icon,
             layout="wide"
         )
     else:
         st.set_page_config(
-            page_title=f"{title} - Nutrition Planner",
+            page_title=f"{title} - Nutrition App",
             page_icon=icon
         )
     

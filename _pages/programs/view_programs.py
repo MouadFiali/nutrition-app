@@ -1,5 +1,5 @@
 """
-View Programs page for the Nutrition Planner application.
+View Programs page for the Nutrition App.
 
 This page allows users to view existing meal programs and their scheduled meals,
 edit specific meals, and view daily nutrition summaries.

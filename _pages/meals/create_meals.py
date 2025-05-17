@@ -1,5 +1,5 @@
 """
-Create Meal page for the Nutrition Planner application.
+Create Meal page for the Nutrition App.
 
 This page allows users to create new regular or custom meals.
 """

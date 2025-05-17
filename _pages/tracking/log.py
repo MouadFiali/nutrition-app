@@ -1,5 +1,5 @@
 """
-Meal Tracking Log page for the Nutrition Planner application.
+Meal Tracking Log page for the Nutrition App.
 
 This page allows users to log meals they've eaten and add optional notes.
 """

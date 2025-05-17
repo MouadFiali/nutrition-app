@@ -1,5 +1,5 @@
 """
-Nutrition Planner App - Test Data Generator
+Nutrition App - Test Data Generator
 
 This script populates the nutrition app database with test data for all major features:
 - User profile

@@ -1,5 +1,5 @@
 """
-Progress Tracking page for the Nutrition Planner application.
+Progress Tracking page for the Nutrition App.
 
 This page allows users to view their nutritional progress over time.
 """

@@ -1,5 +1,5 @@
 """
-Nutrition Planner App - Test Data Generator Part 2: Creating Meals
+Nutrition App - Test Data Generator Part 2: Creating Meals
 
 This script creates a variety of regular and custom meals for testing:
 - Regular meals (made from food sources) for each meal category

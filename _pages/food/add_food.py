@@ -1,5 +1,5 @@
 """
-Add Food page for the Nutrition Planner application.
+Add Food page for the Nutrition App.
 
 This page allows users to add new food sources with their nutritional information.
 """

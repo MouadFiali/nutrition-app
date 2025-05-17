@@ -1,5 +1,5 @@
 """
-Create Program page for the Nutrition Planner application.
+Create Program page for the Nutrition App.
 
 This page allows users to create new meal programs.
 """

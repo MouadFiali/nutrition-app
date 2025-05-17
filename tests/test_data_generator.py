@@ -1,5 +1,5 @@
 """
-Nutrition Planner App - Complete Test Data Generator
+Nutrition App - Complete Test Data Generator
 
 This script runs all parts of the test data generation process:
 1. Sets up the user profile
@@ -29,7 +29,7 @@ from test_data_generator_4 import create_meal_tracking_data
 def generate_all_test_data():
     """Run the complete test data generation process"""
     print("=" * 50)
-    print("NUTRITION PLANNER TEST DATA GENERATOR")
+    print("NUTRITION APP TEST DATA GENERATOR")
     print("=" * 50)
     print("This script will populate the database with comprehensive test data.")
     print("Make sure you have an empty database or are ready to overwrite existing data.")
@@ -74,9 +74,9 @@ def generate_all_test_data():
     print("- 1 user profile with weight loss goal")
     print("- Various food sources across different categories")
     print("- Multiple regular and custom meals for each meal category")
-    print("- A meal program for May 2025")
-    print("- Tracked meals from May 1-16, 2025")
-    print("\nYou can now test all functionality of the Nutrition app.")
+    print("- A meal program for the last 30 days")
+    print("- Tracked meals for the last 15 days or the most recent program")
+    print("\nYou can now test all functionality of the Nutrition App.")
 
 if __name__ == "__main__":
     generate_all_test_data()

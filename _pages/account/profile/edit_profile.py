@@ -1,5 +1,5 @@
 """
-Profile edit page for the Nutrition Planner application.
+Profile edit page for the Nutrition App application.
 
 This page allows users to create or update their profile information,
 including personal details and nutritional goals.
