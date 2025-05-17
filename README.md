@@ -111,4 +111,6 @@ This application was developed using an AI-assisted approach:
 
 This approach demonstrates how effective collaboration between human creativity and AI assistance can produce sophisticated applications efficiently. The development process focused on creating a tool that genuinely solves user needs while maintaining high standards for code quality and user experience.
 
-One more note: This README file was also generated using AI in case you are wondering 😄.
+Another note: This README file was also generated using AI in case you are wondering 😄.
+
+One last note: As the app was developed using AI, it might contain some bugs or issues that weren't tested properly (especially in the comparison or calculation parts). Please report any inconsistencies you find.
