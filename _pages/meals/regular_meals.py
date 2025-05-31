@@ -10,7 +10,8 @@ from utils.constants import MealCategory
 from utils.nutrition import (
     calculate_all_metrics, 
     calculate_macro_targets, 
-    calculate_meal_macros
+    calculate_meal_macros,
+    calculate_food_macros
 )
 from utils.ui import (
     display_success_error, 
@@ -209,14 +210,17 @@ def show_meal_details(meal_data):
         # Create a DataFrame for better display
         ingredients_df = pd.DataFrame([
             {
-                "Food": food['name'],
-                "Quantity": f"{food['quantity']} {food['base_unit']}",
-                "Calories": f"{food['calories'] * food['quantity'] / 100:.0f} kcal",
-                "Protein": f"{food['proteins'] * food['quantity'] / 100:.1f}g",
-                "Carbs": f"{food['carbs'] * food['quantity'] / 100:.1f}g",
-                "Fat": f"{food['fats'] * food['quantity'] / 100:.1f}g"
+            "Food": food['name'],
+            "Quantity": f"{food['quantity']} {food['base_unit']}",
+            **{
+                "Calories": f"{macros['calories']:.0f} kcal",
+                "Protein": f"{macros['proteins']:.1f}g",
+                "Carbs": f"{macros['carbs']:.1f}g",
+                "Fat": f"{macros['fats']:.1f}g"
+            }
             }
             for food in meal_data['foods']
+            for macros in [calculate_food_macros(food, food['quantity'])]
         ])
         
         st.dataframe(ingredients_df, hide_index=True, use_container_width=True)
