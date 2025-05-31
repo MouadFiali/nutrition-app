@@ -2,3 +2,4 @@
 __pycache__/
 nutrition_app.db
 .vscode/
+build/

@@ -12,7 +12,7 @@ from utils.ui import display_success_error, set_success_message, set_error_messa
 db = NutritionDB()
 
 def add_food_source(name, category, calories, proteins, carbs, fats,
-                   portion_size, base_unit, conversion_factor):
+                    base_unit, conversion_factor):
     """Add a new food source and handle success/error messages"""
     if not name:
         set_error_message("Please enter a food name")
@@ -20,7 +20,7 @@ def add_food_source(name, category, calories, proteins, carbs, fats,
 
     if db.save_food_source(
         name, category, calories, proteins, carbs, fats,
-        portion_size, base_unit, conversion_factor
+        base_unit, conversion_factor
     ):
         set_success_message(f"Food '{name}' added successfully!")
         return True
@@ -48,8 +48,6 @@ def add_food_interface():
         st.session_state.food_carbs = 0.0
     if 'food_fats' not in st.session_state:
         st.session_state.food_fats = 0.0
-    if 'food_portion' not in st.session_state:
-        st.session_state.food_portion = 100.0
     if 'food_conversion' not in st.session_state:
         st.session_state.food_conversion = 50.0
     
@@ -80,12 +78,12 @@ def add_food_interface():
     col1, col2, col3 = st.columns(3)
     with col1:
         calories = st.number_input(
-            "Calories (per 100g/ml/unit)", 
+            "Calories (per 100g/ml)", 
             min_value=0.0, 
             value=st.session_state.food_calories,
             format="%.1f", 
             step=10.0,
-            help="Energy content per 100g, 100ml, or per unit",
+            help="Energy content per 100g/ml",
             key="food_calories_input"
         )
         proteins = st.number_input(
@@ -94,7 +92,7 @@ def add_food_interface():
             value=st.session_state.food_proteins,
             format="%.1f", 
             step=1.0,
-            help="Protein content per 100g, 100ml, or per unit",
+            help="Protein content per 100g/ml",
             key="food_proteins_input"
         )
     with col2:
@@ -104,7 +102,7 @@ def add_food_interface():
             value=st.session_state.food_carbs,
             format="%.1f", 
             step=1.0,
-            help="Carbohydrate content per 100g, 100ml, or per unit",
+            help="Carbohydrate content per 100g/ml",
             key="food_carbs_input"
         )
         fats = st.number_input(
@@ -113,7 +111,7 @@ def add_food_interface():
             value=st.session_state.food_fats,
             format="%.1f", 
             step=1.0,
-            help="Fat content per 100g, 100ml, or per unit",
+            help="Fat content per 100g/ml",
             key="food_fats_input"
         )
     with col3:
@@ -132,18 +130,6 @@ def add_food_interface():
         
         # Get step & value based on base unit
         is_unit_based = base_unit == BaseUnit.UNIT.value
-        default_value = 1.0 if is_unit_based else 100.0
-        step_value = 1.0 if is_unit_based else 10.0
-
-        portion_size = st.number_input(
-            "Portion Size",
-            min_value=0.1,
-            value=default_value if st.session_state.food_portion == 100.0 else st.session_state.food_portion,
-            step=step_value,
-            format="%.1f",
-            help="Standard portion size in the selected unit",
-            key="food_portion_input"
-        )
         
         # Initialize conversion factor
         conversion_factor = 1.0
@@ -169,12 +155,11 @@ def add_food_interface():
         st.session_state.food_proteins = proteins
         st.session_state.food_carbs = carbs
         st.session_state.food_fats = fats
-        st.session_state.food_portion = portion_size
         st.session_state.food_conversion = conversion_factor if is_unit_based else 1.0
         
         success = add_food_source(
             name, category, calories, proteins, carbs, fats,
-            portion_size, base_unit, conversion_factor if is_unit_based else 1.0
+            base_unit, conversion_factor if is_unit_based else 1.0
         )
         
         if success:
@@ -184,7 +169,6 @@ def add_food_interface():
             st.session_state.food_proteins = 0.0
             st.session_state.food_carbs = 0.0
             st.session_state.food_fats = 0.0
-            st.session_state.food_portion = 100.0 if base_unit != BaseUnit.UNIT.value else 1.0
             st.session_state.food_conversion = 50.0
             st.rerun()
 

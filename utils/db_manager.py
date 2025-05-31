@@ -41,7 +41,6 @@ class NutritionDB:
                 proteins REAL,
                 carbs REAL,
                 fats REAL,
-                portion_size REAL,
                 base_unit TEXT,  -- 'g', 'ml', or 'unit'
                 conversion_factor REAL DEFAULT 1.0  -- conversion to grams if needed
             )
@@ -176,7 +175,7 @@ class NutritionDB:
         return df
 
     def save_food_source(self, name, category, calories, proteins, carbs, fats, 
-                        portion_size, base_unit, conversion_factor=1.0):
+                        base_unit, conversion_factor=1.0):
         """Save a new food source with simplified unit handling"""
         conn = self.get_connection()
         c = conn.cursor()
@@ -185,12 +184,12 @@ class NutritionDB:
             c.execute('''
                 INSERT INTO food_sources (
                     name, category, calories, proteins, carbs, fats, 
-                    portion_size, base_unit, conversion_factor
+                    base_unit, conversion_factor
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 name, category, calories, proteins, carbs, fats, 
-                portion_size, base_unit, conversion_factor
+                base_unit, conversion_factor
             ))
             conn.commit()
             return True
@@ -200,7 +199,7 @@ class NutritionDB:
             conn.close()
 
     def update_food_source(self, food_id, name, category, calories, proteins, 
-                         carbs, fats, portion_size, base_unit, conversion_factor=1.0):
+                         carbs, fats, base_unit, conversion_factor=1.0):
         """Update an existing food source"""
         # Ensure food_id is an integer
         food_id = int(food_id)
@@ -212,11 +211,11 @@ class NutritionDB:
             c.execute('''
                 UPDATE food_sources 
                 SET name=?, category=?, calories=?, proteins=?, carbs=?, fats=?, 
-                    portion_size=?, base_unit=?, conversion_factor=?
+                    base_unit=?, conversion_factor=?
                 WHERE id=?
             ''', (
                 name, category, calories, proteins, carbs, fats, 
-                portion_size, base_unit, conversion_factor, food_id
+                base_unit, conversion_factor, food_id
             ))
             conn.commit()
             return True

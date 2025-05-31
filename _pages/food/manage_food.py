@@ -35,11 +35,11 @@ def refresh_food_editor():
     st.session_state.food_editor_key += 1
 
 def update_food_source(food_id, name, category, calories, proteins, carbs, fats,
-                     portion_size, base_unit, conversion_factor=1.0):
+                     base_unit, conversion_factor=1.0):
     """Update an existing food source and handle the refresh"""
     if db.update_food_source(
         food_id, name, category, calories, proteins, carbs, fats,
-        portion_size, base_unit, conversion_factor
+        base_unit, conversion_factor
     ):
         refresh_food_editor()
         set_success_message("Food updates saved successfully!")
@@ -204,7 +204,7 @@ def display_food_editor(foods_df):
             ),
             "calories": st.column_config.NumberColumn(
                 "Calories",
-                help="Per portion",
+                help="Per 100g/ml",
                 min_value=0,
                 format="%.1f"
             ),
@@ -226,11 +226,6 @@ def display_food_editor(foods_df):
                 min_value=0,
                 format="%.1f"
             ),
-            "portion_size": st.column_config.NumberColumn(
-                "Portion",
-                min_value=0,
-                format="%.1f"
-            ),
             "base_unit": st.column_config.SelectboxColumn(
                 "Unit",
                 options=BaseUnit.as_list()
@@ -245,7 +240,8 @@ def display_food_editor(foods_df):
             "id": None,
             "proteins_pct": None,
             "carbs_pct": None,
-            "fats_pct": None
+            "fats_pct": None,
+            "portion_size": None
         }
     )
     
@@ -269,7 +265,7 @@ def display_food_editor(foods_df):
                 update_food_source(
                     row['id'], row['name'], row['category'],
                     row['calories'], row['proteins'], row['carbs'],
-                    row['fats'], row['portion_size'], row['base_unit'],
+                    row['fats'], row['base_unit'],
                     conv_factor
                 )
     

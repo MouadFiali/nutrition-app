@@ -64,7 +64,6 @@ def add_food_sources():
             "proteins": 31,
             "carbs": 0,
             "fats": 3.6,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -74,7 +73,6 @@ def add_food_sources():
             "proteins": 24,
             "carbs": 0,
             "fats": 1,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -84,7 +82,6 @@ def add_food_sources():
             "proteins": 26,
             "carbs": 0,
             "fats": 1,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -94,7 +91,6 @@ def add_food_sources():
             "proteins": 6.3,
             "carbs": 0.7,
             "fats": 5,
-            "portion_size": 1,
             "base_unit": "unit",
             "conversion_factor": 50
         },
@@ -105,7 +101,6 @@ def add_food_sources():
             "proteins": 22,
             "carbs": 0,
             "fats": 13,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -115,7 +110,6 @@ def add_food_sources():
             "proteins": 10,
             "carbs": 3.6,
             "fats": 0,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -125,7 +119,6 @@ def add_food_sources():
             "proteins": 11,
             "carbs": 3.4,
             "fats": 4.3,
-            "portion_size": 100,
             "base_unit": "g"
         },
     ]
@@ -139,7 +132,6 @@ def add_food_sources():
             "proteins": 2.6,
             "carbs": 23,
             "fats": 0.9,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -149,7 +141,6 @@ def add_food_sources():
             "proteins": 1.6,
             "carbs": 20,
             "fats": 0.1,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -159,7 +150,6 @@ def add_food_sources():
             "proteins": 16.9,
             "carbs": 66,
             "fats": 6.9,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -169,7 +159,6 @@ def add_food_sources():
             "proteins": 4.4,
             "carbs": 21.3,
             "fats": 1.9,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -179,7 +168,6 @@ def add_food_sources():
             "proteins": 13,
             "carbs": 41,
             "fats": 3.4,
-            "portion_size": 1,
             "base_unit": "unit",
             "conversion_factor": 100
         },
@@ -190,7 +178,6 @@ def add_food_sources():
             "proteins": 9,
             "carbs": 20,
             "fats": 0.4,
-            "portion_size": 100,
             "base_unit": "g"
         },
     ]
@@ -204,7 +191,6 @@ def add_food_sources():
             "proteins": 2,
             "carbs": 8.5,
             "fats": 14.7,
-            "portion_size": 1,
             "base_unit": "unit",
             "conversion_factor": 170
         },
@@ -215,7 +201,6 @@ def add_food_sources():
             "proteins": 21,
             "carbs": 22,
             "fats": 49,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -225,7 +210,6 @@ def add_food_sources():
             "proteins": 0,
             "carbs": 0,
             "fats": 100,
-            "portion_size": 100,
             "base_unit": "ml"
         },
         {
@@ -235,7 +219,6 @@ def add_food_sources():
             "proteins": 17,
             "carbs": 42,
             "fats": 31,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -245,7 +228,6 @@ def add_food_sources():
             "proteins": 15.2,
             "carbs": 13.7,
             "fats": 65.2,
-            "portion_size": 100,
             "base_unit": "g"
         },
     ]
@@ -259,7 +241,6 @@ def add_food_sources():
             "proteins": 1.1,
             "carbs": 23,
             "fats": 0.3,
-            "portion_size": 1,
             "base_unit": "unit",
             "conversion_factor": 118
         },
@@ -270,7 +251,6 @@ def add_food_sources():
             "proteins": 0.3,
             "carbs": 14,
             "fats": 0.2,
-            "portion_size": 1,
             "base_unit": "unit",
             "conversion_factor": 182
         },
@@ -281,7 +261,6 @@ def add_food_sources():
             "proteins": 0.7,
             "carbs": 14,
             "fats": 0.3,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -291,7 +270,6 @@ def add_food_sources():
             "proteins": 0.7,
             "carbs": 7.7,
             "fats": 0.3,
-            "portion_size": 100,
             "base_unit": "g"
         },
         {
@@ -301,7 +279,6 @@ def add_food_sources():
             "proteins": 0.9,
             "carbs": 11.8,
             "fats": 0.1,
-            "portion_size": 1,
             "base_unit": "unit",
             "conversion_factor": 131
         },
@@ -321,7 +298,6 @@ def add_food_sources():
             proteins=food["proteins"],
             carbs=food["carbs"],
             fats=food["fats"],
-            portion_size=food["portion_size"],
             base_unit=food["base_unit"],
             conversion_factor=conversion_factor
         )
