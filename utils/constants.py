@@ -104,6 +104,7 @@ class FoodCategory(Enum):
     COMPLEX_CARBOHYDRATES = "Complex Carbohydrates"
     HEALTHY_FATS = "Healthy Fats"
     FRUITS = "Fruits"
+    OTHER = "Other"
 
     @classmethod
     def as_list(cls) -> List[str]:
